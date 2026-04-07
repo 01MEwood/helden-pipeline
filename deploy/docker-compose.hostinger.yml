@@ -1,0 +1,91 @@
+# =====================================================================
+# helden-pipeline — Hostinger Docker Manager Stack (mit nginx-proxy-manager)
+# =====================================================================
+# Setup-Voraussetzung (EINMALIG pro VPS — siehe README.md):
+#
+#   docker network create meos-shared
+#   docker network connect meos-shared nginx-proxy-manager-gxkd
+#   docker restart nginx-proxy-manager-gxkd
+#
+# Pro Stack (für helden-pipeline):
+#   1. Diesen YAML-Inhalt im Hostinger Docker Manager als neuen Stack einfügen
+#   2. Environment Variables setzen (siehe deploy/.env.example)
+#   3. Im NPM Web-UI einen Proxy Host anlegen:
+#        Domain Names:    helden-pipeline.meosapp.de
+#        Forward Hostname: helden-pipeline-frontend
+#        Forward Port:    80
+#        Block Common Exploits: ON
+#        Websockets Support:    ON
+#      Tab "Custom locations":
+#        location:        /api
+#        Forward Hostname: helden-pipeline-backend
+#        Forward Port:    4100   # eigener Port für helden-pipeline (vermeidet 4000-Verwechslungen)
+#      Tab "SSL":
+#        Request a new SSL Certificate (Let's Encrypt)
+#        Force SSL: ON, HTTP/2 Support: ON
+#
+#   4. DNS A-Record vorher setzen:
+#        helden-pipeline.meosapp.de  →  31.97.122.6
+# =====================================================================
+
+version: "3.8"
+
+services:
+  frontend:
+    image: memario/helden-pipeline-frontend:latest
+    container_name: helden-pipeline-frontend
+    restart: unless-stopped
+    pull_policy: always
+    networks:
+      - meos-shared
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  backend:
+    image: memario/helden-pipeline-backend:latest
+    container_name: helden-pipeline-backend
+    restart: unless-stopped
+    pull_policy: always
+    environment:
+      NODE_ENV: production
+      PORT: "4100"
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@helden-pipeline-db:5432/${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4100/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - meos-shared
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    container_name: helden-pipeline-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - helden_pipeline_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - meos-shared
+
+volumes:
+  helden_pipeline_pgdata:
+    name: helden_pipeline_pgdata
+
+networks:
+  meos-shared:
+    external: true

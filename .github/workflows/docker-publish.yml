@@ -1,7 +1,7 @@
 name: Build & Push to Docker Hub
 
 # Triggert bei jedem Push auf main.
-# Baut Frontend + Backend parallel und pusht zu Docker Hub (memario/...)
+# Baut Frontend + Backend parallel und pusht zu Docker Hub (mariomeosv40/...)
 # mit zwei Tags: 'latest' und der Commit-SHA (für rollbacks).
 
 on:
@@ -14,7 +14,7 @@ on:
   workflow_dispatch: # erlaubt manuellen Trigger über GitHub UI
 
 env:
-  DOCKERHUB_NAMESPACE: memario
+  DOCKERHUB_NAMESPACE: mariomeosv40
   APP_NAME: helden-pipeline # <-- in jedem Modul anpassen (z.B. helden-pipeline)
 
 jobs:

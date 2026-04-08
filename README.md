@@ -3,7 +3,7 @@
 Erstes MEOS-Modul, das die Deploy-Pipeline validiert.
 
 - **GitHub:** github.com/01MEwood/helden-pipeline
-- **Docker Hub:** `memario/helden-pipeline-frontend`, `memario/helden-pipeline-backend`
+- **Docker Hub:** `mariomeosv40/helden-pipeline-frontend`, `mariomeosv40/helden-pipeline-backend`
 - **Live-URL:** https://helden-pipeline.meosapp.de
 - **API:** https://helden-pipeline.meosapp.de/api
 - **Reverse Proxy:** nginx-proxy-manager (NPM) via gemeinsames Docker-Netzwerk `meos-shared`
@@ -43,7 +43,7 @@ Damit NPM die neuen Stacks per Container-Name erreichen kann, brauchen wir ein g
 
 ### Schritt 1 — Docker Hub Repos anlegen
 
-Tab **hub.docker.com** (eingeloggt als `memario`):
+Tab **hub.docker.com** (eingeloggt als `mariomeosv40`):
 
 1. **Create Repository** → Name: `helden-pipeline-frontend` → Public/Private nach Wahl → **Create**
 2. Wiederholen: `helden-pipeline-backend`
@@ -69,7 +69,7 @@ Tab **github.com/01MEwood/helden-pipeline**:
 cd helden-pipeline
 git init
 git add .
-git commit -m "deploy: hostinger pipeline via memario + npm"
+git commit -m "deploy: hostinger pipeline via mariomeosv40 + npm"
 git branch -M main
 git remote add origin git@github.com:01MEwood/helden-pipeline.git
 git push -u origin main --force
@@ -77,7 +77,7 @@ git push -u origin main --force
 
 → GitHub Actions startet automatisch.
    Tab **GitHub → Actions** öffnen, ~3-5 min warten.
-   Erfolg: Beide Images sind auf hub.docker.com/r/memario sichtbar.
+   Erfolg: Beide Images sind auf hub.docker.com/r/mariomeosv40 sichtbar.
 
 ### Schritt 5 — DNS A-Record
 
@@ -162,7 +162,7 @@ Falls weiterhin 502 → im Hostinger Docker Manager prüfen, ob alle 3 Container
 git add . && git commit -m "feat: …" && git push
 ```
 
-→ GitHub Actions baut & pusht zu `memario/helden-pipeline-{frontend,backend}:latest` (+ SHA-Tag, + Build-Nummer).
+→ GitHub Actions baut & pusht zu `mariomeosv40/helden-pipeline-{frontend,backend}:latest` (+ SHA-Tag, + Build-Nummer).
 → Hostinger Docker Manager → Stack `helden-pipeline` → **Recreate** (zieht `latest` neu).
 → Live in <2 min. NPM Proxy Host bleibt unverändert.
 

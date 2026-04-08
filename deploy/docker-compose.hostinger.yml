@@ -32,7 +32,7 @@ version: "3.8"
 
 services:
   frontend:
-    image: memario/helden-pipeline-frontend:latest
+    image: mariomeosv40/helden-pipeline-frontend:latest
     container_name: helden-pipeline-frontend
     restart: unless-stopped
     pull_policy: always
@@ -43,7 +43,7 @@ services:
         condition: service_healthy
 
   backend:
-    image: memario/helden-pipeline-backend:latest
+    image: mariomeosv40/helden-pipeline-backend:latest
     container_name: helden-pipeline-backend
     restart: unless-stopped
     pull_policy: always
